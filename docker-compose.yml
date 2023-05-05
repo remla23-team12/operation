@@ -1,0 +1,18 @@
+version: "0.0.1"
+
+services:
+  flask-container-1:
+    image: ghcr.io/remla23-team12/app:latest
+    container_name: flask-container-1
+    environment:
+      - MODEL_SERVICE_URL=http://flask-container-2:8080
+    ports:
+      - "8081:5000"
+
+
+  flask-container-2:
+    image: ghcr.io/remla23-team12/model-service:latest
+    container_name: flask-container-2
+    ports:
+      - "8082:8080"
+
