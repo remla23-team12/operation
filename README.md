@@ -17,6 +17,36 @@ Please follow these steps:
     ```
 ---
 
+## Kubernetes Migration
+---
+We have migrated our Docker deployment to Kubernetes.
+
+Please follow these steps:
+1. Run the  following command to start minikube (do not forget to also have docker running)
+   ```bat
+    minikube start
+    ```
+2. Run the following command once to enable ingress
+   ```bat
+    minikube addons enable ingress
+    ```
+3. Run the following command once and keep the terminal open for the kubernetes dashboard
+   ```bat
+    minikube dashboard
+    ```
+4. Navigate to the root folder and enter the following command:
+   ```bat
+    kubectl apply -f deployment.yml
+    ```
+5. In the dashboard you should see that there are two pods created
+6. Open a new tab, and search for `localhost` on your browser of choice
+7. Test it by entering reviews. For example submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
+8. To remove the pods: 
+    ```bat
+    kubectl delete -f deployment.yml
+    ```
+---
+
 ### Some interesting starting pointers to files that help outsiders understand the code base:
 In the docker-compose.yml file we have two services namely `flask-container-1` and `flask-container-2`. 
 
