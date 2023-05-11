@@ -19,6 +19,8 @@ spec:
         image: ghcr.io/remla23-team12/model-service:latest
         ports:
         - containerPort: 8080
+      imagePullSecrets:
+      - name: ghcr-credentials
 ---
 apiVersion: v1
 kind: Service
@@ -56,6 +58,8 @@ spec:
         env:
         - name: MODEL_SERVICE_URL
           value: "http://flask-container-2-service:8082"
+      imagePullSecrets:
+      - name: ghcr-credentials
 ---
 apiVersion: v1
 kind: Service
