@@ -1,22 +1,3 @@
-# Operation
----
-Please follow these steps:
-1. Make sure Docker is up and running (e.g. via the Docker desktop app or by running the following command in a Linux operating system:) 
-    ```bat
-    sudo service docker start
-    ```
-2. In your command line interface make sure your are in the root of the folder where the docker-compose.yml file is located. Once in the right directory run the following command:
-    ```bat
-    docker-compose up -d
-    ```
-3. Open localhost:8081 on your browser of choice
-4. Test it by entering reviews. For example submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-5. To stop the application execute the following command: 
-    ```bat
-    docker-compose down
-    ```
----
-
 ## Kubernetes Migration
 ---
 We have migrated our Docker deployment to Kubernetes.
@@ -34,14 +15,25 @@ Please follow these steps:
    ```bat
     minikube dashboard
     ```
-4. Navigate to the root folder and enter the following command:
+4. Run the following command
+   ```bat
+    kubectl create secret docker-registry ghcr-credentials \
+    --docker-server=ghcr.io \
+    --docker-username=<GITHUB_USERNAME> \
+    --docker-password=<GITHUB_PAT>
+    ```
+5. Navigate to the root folder and enter the following command:
    ```bat
     kubectl apply -f deployment.yml
     ```
-5. In the dashboard you should see that there are two pods created
-6. Open a new tab, and search for `localhost` on your browser of choice
-7. Test it by entering reviews. For example submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-8. To remove the pods: 
+6. In the dashboard you should see that there are two pods created
+7. Run the following command once and keep the terminal open for the tunnel to stay active
+   ```bat
+    minikube tunnel
+    ```
+8. Open a new tab, and search for `localhost` on your browser of choice
+9. Test it by entering reviews. For example submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
+10. When done, to remove the pods: 
     ```bat
     kubectl delete -f deployment.yml
     ```
