@@ -1,4 +1,9 @@
-# values.yml
-nginx:
-  version: latest
-  port: 80
+imagePullSecrets: ghcr-credentials
+flaskContainer1:
+  image: ghcr.io/remla23-team12/app:latest
+  port: 5000
+  servicePort: 8081
+flaskContainer2:
+  image: ghcr.io/remla23-team12/model-service:latest
+  port: 8080
+  servicePort: 8082

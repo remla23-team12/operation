@@ -1,3 +1,10 @@
+## Prerequisites
+
+- Minikube
+- Docker
+- Helm
+- Kubectl
+
 ## Kubernetes Migration
 ---
 We have migrated our Docker deployment to Kubernetes.
@@ -22,21 +29,42 @@ Please follow these steps:
     --docker-username=<GITHUB_USERNAME> \
     --docker-password=<GITHUB_PAT>
     ```
-5. Navigate to the root folder and enter the following command:
-   ```bat
-    kubectl apply -f deployment.yml
-    ```
-6. In the dashboard you should see that there are two pods created
-7. Run the following command once and keep the terminal open for the tunnel to stay active
-   ```bat
+5. At this step, you have two options:
+
+    - For the Kubernetes deployment:
+
+        Navigate to the root folder and enter the following command:
+        ```bat
+        kubectl apply -f deployment.yml
+        ```
+        
+    - For the Helm deployment:
+
+        Run the following command:
+        ```bat
+        helm install myapp  ./helm_chart/
+        ```
+6. In the dashboard, you should see that there are two pods created.
+7. Run the following command once and keep the terminal open for the tunnel to stay active.
+    ```bat
     minikube tunnel
     ```
-8. Open a new tab, and search for `localhost` on your browser of choice
-9. Test it by entering reviews. For example submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
+8. Open a new tab, and search for `localhost` on your browser of choice.
+9. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
 10. When done, to remove the pods: 
-    ```bat
-    kubectl delete -f deployment.yml
-    ```
+    - For the Kubernetes deployment:
+
+        Navigate to the root folder and enter the following command:
+        ```bat
+        kubectl delete -f deployment.yml
+        ```
+        
+    - For the Helm deployment:
+
+        Run the following command:
+        ```bat
+        helm uninstall myapp
+        ```
 ---
 
 ### Some interesting starting pointers to files that help outsiders understand the code base:
