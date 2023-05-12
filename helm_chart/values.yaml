@@ -1,0 +1,4 @@
+# values.yml
+nginx:
+  version: latest
+  port: 80
