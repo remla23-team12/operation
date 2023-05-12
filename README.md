@@ -51,7 +51,15 @@ Please follow these steps:
     ```
 8. Open a new tab, and search for `localhost` on your browser of choice.
 9. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-10. When done, to remove the pods: 
+10. To see the Prometheus dashboard and monitoring total_predictions, correct_predictions, prediction_accuracy, prediction_accuracy_changes and prediction_duration_summary, first need to ensure a release name myprom was installed
+    ```bat
+    helm install myprom prom-repo/kube-prometheus-stack
+    ```
+11. After making sure installing this release, get the url of the prometheus dashboard, and you can add variable name to the query and press execute.
+    ```bat
+    minikube service myprom-kube-prometheus-sta-prometheus --url
+    ```
+12. When done, to remove the pods: 
     - For the Kubernetes deployment:
 
         Navigate to the root folder and enter the following command:
