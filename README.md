@@ -55,7 +55,7 @@ Please follow these steps:
     ```bat
     helm install myprom prom-repo/kube-prometheus-stack
     ```
-11. After making sure installing this release, localhost/prometheus enables a direct routing, and you can add variable name to the query and click the execute button. This requires addition setup by overwriting default prometheus urls
+11. After making sure installing this release, localhost/prometheus enables a direct routing, and you can add variable name to the query and click the execute button. This requires addition setup by overwriting default prometheus urls. https://artifacthub.io/packages/helm/choerodon/kube-prometheus. If bugs are experienced in later development, abolish this by setting externalUrl and routePrefix to its default values and use "minikube service myprom-kube-prometheus-sta-prometheus --url" instead.
     ```bat
     helm upgrade myprom prom-repo/kube-prometheus-stack -f prometheusValues.yaml
     ```
