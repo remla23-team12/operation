@@ -1,0 +1,4 @@
+prometheus:
+  prometheusSpec:
+    externalUrl: http://localhost/prometheus
+    routePrefix: /prometheus

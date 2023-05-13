@@ -55,9 +55,9 @@ Please follow these steps:
     ```bat
     helm install myprom prom-repo/kube-prometheus-stack
     ```
-11. After making sure installing this release, get the url of the prometheus dashboard, and you can add variable name to the query and press execute.
+11. After making sure installing this release, localhost/prometheus enables a direct routing, and you can add variable name to the query and click the execute button. This requires addition setup by overwriting default prometheus urls
     ```bat
-    minikube service myprom-kube-prometheus-sta-prometheus --url
+    helm upgrade myprom prom-repo/kube-prometheus-stack -f prometheusValues.yaml
     ```
 12. When done, to remove the pods: 
     - For the Kubernetes deployment:
