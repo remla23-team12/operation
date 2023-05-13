@@ -1,0 +1,38 @@
+additionalPrometheusRulesMap:
+  my-alerts:
+    - name: HighIncorrectPredictions
+      rules:
+        - alert: HighIncorrectPredictions
+          expr: |
+            (total_predictions_total - correct_predictions_total) > 10
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High number of incorrect predictions"
+            description: "The total number of incorrect predictions has exceeded 10 for one consecutive minute."
+    - name: HighRequestRate
+      rules:
+        - alert: HighRequestRate
+          expr: |
+            increase(total_predictions_total[1m]) > 15
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High request rate detected"
+            description: "The service is receiving more than 15 requests per minute for two consecutive minutes."
+
+
+# prometheus:
+#   ingress:
+#     enabled: true
+#     hosts: ['prometheus']
+#     paths: ['/']
+#     tls:
+#     - secretName: tls-credential
+#       hosts:
+#       - prometheus
+#   prometheusSpec:
+#     externalUrl: "https://prometheus/"
+#     routePrefix: /
