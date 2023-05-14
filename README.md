@@ -29,7 +29,12 @@ Please follow these steps:
     --docker-username=<GITHUB_USERNAME> \
     --docker-password=<GITHUB_PAT>
     ```
-5. At this step, you have two options:
+5. Add the myprom repo to use the ServiceMonitor
+   ```bat
+   helm install myprom prom-repo/kube-prometheus-stack   
+   ```
+
+6. At this step, you have two options:
 
     - For the Kubernetes deployment:
 
@@ -44,22 +49,22 @@ Please follow these steps:
         ```bat
         helm install myapp  ./helm_chart/
         ```
-6. In the dashboard, you should see that there are two pods created.
-7. Run the following command once and keep the terminal open for the tunnel to stay active.
+7. In the dashboard, you should see that there are two pods created.
+8. Run the following command once and keep the terminal open for the tunnel to stay active.
     ```bat
     minikube tunnel
     ```
-8. Open a new tab, and search for `localhost` on your browser of choice.
-9. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-10. To see the Prometheus dashboard and monitoring total_predictions, correct_predictions, prediction_accuracy, prediction_accuracy_changes and prediction_duration_summary, first need to ensure a release name myprom was installed
+9. Open a new tab, and search for `localhost` on your browser of choice.
+10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
+11. To see the Prometheus dashboard and monitoring total_predictions, correct_predictions, prediction_accuracy, prediction_accuracy_changes and prediction_duration_summary, first need to ensure a release name myprom was installed
     ```bat
     helm install myprom prom-repo/kube-prometheus-stack
     ```
-11. After making sure installing this release, localhost/prometheus enables a direct routing, and you can add variable name to the query and click the execute button. This requires addition setup by overwriting default prometheus urls. https://artifacthub.io/packages/helm/choerodon/kube-prometheus. If bugs are experienced in later development, abolish this by setting externalUrl and routePrefix to its default values and use "minikube service myprom-kube-prometheus-sta-prometheus --url" instead.
+12. After making sure installing this release, localhost/prometheus enables a direct routing, and you can add variable name to the query and click the execute button. This requires addition setup by overwriting default prometheus urls. https://artifacthub.io/packages/helm/choerodon/kube-prometheus. If bugs are experienced in later development, abolish this by setting externalUrl and routePrefix to its default values and use "minikube service myprom-kube-prometheus-sta-prometheus --url" instead.
     ```bat
     helm upgrade myprom prom-repo/kube-prometheus-stack -f prometheusValues.yaml
     ```
-12. When done, to remove the pods: 
+13. When done, to remove the pods: 
     - For the Kubernetes deployment:
 
         Navigate to the root folder and enter the following command:
