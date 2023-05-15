@@ -18,7 +18,7 @@ Please follow these steps:
    ```bat
     minikube addons enable ingress
     ```
-3. Run the following command once and keep the terminal open for the kubernetes dashboard
+3. Run the following command once and keep the terminal open for the Kubernetes dashboard
    ```bat
     minikube dashboard
     ```
@@ -51,11 +51,11 @@ Please follow these steps:
     ```
 9. Open a new tab, and search for `localhost` on your browser of choice.
 10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-11. To get to graphana dashboard run the following command
+11. To get to Grafana dashboard run the following command
     ```bat
     minikube service myprom-grafana --url
     ```
-13. Then go to the dashboard page via the menu on the left and click the "new" button on the right. select import and upload the Dashboard.json that is present in the repo. This will open up the graphana visualizations.
+13. Then go to the dashboard page via the menu on the left and click the "new" button on the right. select import and upload the Dashboard.json that is present in the repo. This will open up the Grafana visualizations.
 12. When done, remove the application and close all terminals: 
     Run the following command:
     ```bat
@@ -63,16 +63,16 @@ Please follow these steps:
     ```
 ---
 
-### Optionally to just use the model and not prometheus and graphana run the following commans instead of steps 5, 6, and 7
-    Navigate to the root folder and enter the following command:
-    ```bat
-    kubectl apply -f deployment.yml
-    ```
+### Optionally to just use the model and not Prometheus and Grafana run the following commans instead of steps 5, 6, and 7
+   Navigate to the root folder and enter the following command:
+```bat
+kubectl apply -f deployment.yml
+```
 
-    To remove the pods again run:
-    ```bat
-    kubectl delete -f deployment.yml
-    ```
+To remove the pods again run:
+ ```bat
+ kubectl delete -f deployment.yml
+ ```
 
 ### Some interesting starting pointers to files that help outsiders understand the code base:
 In the docker-compose.yml file we have two services namely `flask-container-1` and `flask-container-2`. 
