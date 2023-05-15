@@ -14,7 +14,7 @@ Please follow these steps:
    ```bat
     minikube start
     ```
-2. Run the following command once to enable ingress
+2. Run the following command once to enable ingress (if not already enabled)
    ```bat
     minikube addons enable ingress
     ```
@@ -29,56 +29,50 @@ Please follow these steps:
     --docker-username=<GITHUB_USERNAME> \
     --docker-password=<GITHUB_PAT>
     ```
-5. Add the myprom repo to use the ServiceMonitor
-   ```bat
-   helm install myprom prom-repo/kube-prometheus-stack   
-   ```
-
-6. At this step, you have two options:
-
-    - For the Kubernetes deployment:
-
-        Navigate to the root folder and enter the following command:
-        ```bat
-        kubectl apply -f deployment.yml
-        ```
-        
-    - For the Helm deployment:
-
-        Run the following command:
-        ```bat
-        helm install myapp  ./helm_chart/
-        ```
-7. In the dashboard, you should see that there are two pods created.
+5. To see the Prometheus dashboard and monitoring total_predictions, correct_predictions, prediction_accuracy, prediction_accuracy_changes and prediction_duration_summary, first need to ensure a release name myprom was installed
+    Add the myprom repo to use the ServiceMonitor
+    ```bat
+    helm install myprom prom-repo/kube-prometheus-stack   
+    ```
+6. Make prometheus available in the browser via localhost/prometheus
+    ```bat
+    helm upgrade myprom prom-repo/kube-prometheus-stack -f prometheusValues.yaml
+    ```
+    (If after the next few steps localhost/prometheus doesn't work use "minikube service myprom-kube-prometheus-sta-prometheus --url" instead)
+7. Install the helm chart
+    Run the following command:
+    ```bat
+    helm install myapp  ./helm_chart/
+    ```
+7. In the dashboard, you should see that there are 8 pods created and a few other sets of services.
 8. Run the following command once and keep the terminal open for the tunnel to stay active.
     ```bat
     minikube tunnel
     ```
 9. Open a new tab, and search for `localhost` on your browser of choice.
 10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-11. To see the Prometheus dashboard and monitoring total_predictions, correct_predictions, prediction_accuracy, prediction_accuracy_changes and prediction_duration_summary, first need to ensure a release name myprom was installed
+11. To get to graphana dashboard run the following command
     ```bat
-    helm install myprom prom-repo/kube-prometheus-stack
+    minikube service myprom-grafana --url
     ```
-12. After making sure installing this release, localhost/prometheus enables a direct routing, and you can add variable name to the query and click the execute button. This requires addition setup by overwriting default prometheus urls. https://artifacthub.io/packages/helm/choerodon/kube-prometheus. If bugs are experienced in later development, abolish this by setting externalUrl and routePrefix to its default values and use "minikube service myprom-kube-prometheus-sta-prometheus --url" instead.
+13. Then go to the dashboard page via the menu on the left and click the "new" button on the right. select import and upload the Dashboard.json that is present in the repo. This will open up the graphana visualizations.
+12. When done, remove the application and close all terminals: 
+    Run the following command:
     ```bat
-    helm upgrade myprom prom-repo/kube-prometheus-stack -f prometheusValues.yaml
+    helm uninstall myapp
     ```
-13. When done, to remove the pods: 
-    - For the Kubernetes deployment:
-
-        Navigate to the root folder and enter the following command:
-        ```bat
-        kubectl delete -f deployment.yml
-        ```
-        
-    - For the Helm deployment:
-
-        Run the following command:
-        ```bat
-        helm uninstall myapp
-        ```
 ---
+
+### Optionally to just use the model and not prometheus and graphana run the following commans instead of steps 5, 6, and 7
+    Navigate to the root folder and enter the following command:
+    ```bat
+    kubectl apply -f deployment.yml
+    ```
+
+    To remove the pods again run:
+    ```bat
+    kubectl delete -f deployment.yml
+    ```
 
 ### Some interesting starting pointers to files that help outsiders understand the code base:
 In the docker-compose.yml file we have two services namely `flask-container-1` and `flask-container-2`. 
