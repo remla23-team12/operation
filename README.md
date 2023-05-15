@@ -55,8 +55,8 @@ Please follow these steps:
     ```bat
     minikube service myprom-grafana --url
     ```
-13. Then go to the dashboard page via the menu on the left and click the "new" button on the right. select import and upload the Dashboard.json that is present in the repo. This will open up the Grafana visualizations.
-12. When done, remove the application and close all terminals: 
+12. The username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `Home` (the name of dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value Home under the Name column, click that to be directed to the dashboards.
+13. When done, remove the application and close all terminals: 
     Run the following command:
     ```bat
     helm uninstall myapp
