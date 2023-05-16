@@ -51,7 +51,7 @@ Please follow these steps:
     ```
 9. Open a new tab, and search for `localhost` on your browser of choice.
 10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-11. To get to Grafana dashboard run the following command
+11. To get to Grafana dashboard run the following command (note: the following command will provide a link in the terminal to open Grafana in a browser, please note that Grafana will not open in Safari).
     ```bat
     minikube service myprom-grafana --url
     ```
