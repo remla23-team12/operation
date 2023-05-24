@@ -11,51 +11,43 @@ We have migrated our Docker deployment to Kubernetes.
 
 Please follow these steps:
 1. Run the  following command to start minikube (do not forget to also have docker running)
-   ```bat
+    ```bat
     minikube start
     ```
 2. Run the following command once to enable ingress (if not already enabled)
-   ```bat
+    ```bat
     minikube addons enable ingress
     ```
 3. Run the following command once and keep the terminal open for the Kubernetes dashboard
-   ```bat
+    ```bat
     minikube dashboard
     ```
 4. Run the following command
-   ```bat
+    ```bat
+    docker login ghcr.io
+    ```
+    If that does not work login via this command.
+    ```bat
     kubectl create secret docker-registry ghcr-credentials \
     --docker-server=ghcr.io \
     --docker-username=<GITHUB_USERNAME> \
     --docker-password=<GITHUB_PAT>
     ```
-5. To see the Prometheus dashboard and monitoring total_predictions, correct_predictions, prediction_accuracy, prediction_accuracy_changes and prediction_duration_summary, first need to ensure a release name myprom was installed
-    Add the myprom repo to use the ServiceMonitor
-    ```bat
-    helm install myprom prom-repo/kube-prometheus-stack   
-    ```
-6. Make prometheus available in the browser via localhost/prometheus
-    ```bat
-    helm upgrade myprom prom-repo/kube-prometheus-stack -f prometheusValues.yaml
-    ```
-    (If after the next few steps localhost/prometheus doesn't work use "minikube service myprom-kube-prometheus-sta-prometheus --url" instead)
-7. Install the helm chart
+5. Install the helm chart
     Run the following command:
     ```bat
     helm install myapp  ./helm_chart/
     ```
-7. In the dashboard, you should see that there are 8 pods created and a few other sets of services.
-8. Run the following command once and keep the terminal open for the tunnel to stay active.
+6. In the dashboard, you should see that there are 8 pods created and a few other sets of services.
+7. Run the following command once and keep the terminal open for the tunnel to stay active to access the services.
     ```bat
     minikube tunnel
     ```
-9. Open a new tab, and search for `localhost` on your browser of choice.
+8. Check the dashboard and wait until everything has started and is green to continue to the next step.
+9. To access the ML model for restaurant reviews simply navigate to `localhost`.
 10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-11. To get to Grafana dashboard run the following command (note: the following command will provide a link in the terminal to open Grafana in a browser, please note that Grafana will not open in Safari).
-    ```bat
-    minikube service myprom-grafana --url
-    ```
-12. The username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `REMLATeam12` (the title name of our dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value `REMLATeam12` under the Name column, click that to be directed to the dashboards.
+11. To access promotheus simply navigate to `localhost/prometheus`.
+12. To access grafana simply navigate to `localhost/grafana`. You will be prompted to login, the username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `REMLATeam12` (the title name of our dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value `REMLATeam12` under the Name column, click that to be directed to the dashboards.
 13. When done, remove the application and close all terminals: 
     Run the following command:
     ```bat

@@ -30,7 +30,7 @@ kind: ServiceMonitor
 metadata:
   name: mymonitor
   labels:
-    release: myprom
+    release: myapp
 spec:
   selector:
     matchLabels:
