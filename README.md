@@ -42,7 +42,7 @@ Please follow these steps:
     ```bat
     kubectl label ns default istio-injection=enabled
     ```
-7. In the dashboard, you should see that there are 8 pods created and a few other sets of services.
+7. In the dashboard, you should see that there are 10 pods created and a few other sets of services.
 8. Run the following command once and keep the terminal open for the tunnel to stay active to access the services.
     ```bat
     minikube tunnel
