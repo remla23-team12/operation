@@ -59,11 +59,10 @@ spec:
     - destination:
         host: flask-container-1-service
         subset: v1
-      weight: 90
-    - destination:
-        host: flask-container-1-service
+      weight: 100
+      mirror:
+        host: flask-container-2-service
         subset: v2
-      weight: 10
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
