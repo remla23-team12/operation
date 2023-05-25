@@ -17,7 +17,7 @@ kube-prometheus-stack:
       additionalAlertManagerConfigs:
         - static_configs:
           - targets: 
-            - "myapp-kube-prometheus-stac-alertmanager:9093"
+            - "prom-alertmanager:9093"
       externalUrl: http://localhost/prometheus
       routePrefix: /prometheus
   additionalPrometheusRulesMap:
