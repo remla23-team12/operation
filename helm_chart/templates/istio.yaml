@@ -1,0 +1,102 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: flask-container-2-destination-rule
+spec:
+  host: flask-container-2-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: flask-container-1-destination-rule
+spec:
+  host: flask-container-1-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-entry-service
+spec:
+  gateways:
+    - my-gateway
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        prefix: /prometheus
+    route:
+    - destination:
+        host: {{ .Values.kube-prometheus-stack.fullnameOverride }}-prometheus
+        port:
+          number: 9090
+  - match:
+    - uri:
+        prefix: /grafana
+    route:
+    - destination:
+        host: myapp-grafana
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+      weight: 90
+    - destination:
+        host: flask-container-1-service
+        subset: v2
+      weight: 10
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: my-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: flask-container-2-virtual-service
+spec:
+  hosts:
+  - flask-container-2-service
+  http:
+  - match:
+    - sourceLabels:
+        version: v2
+    route:
+    - destination:
+        host: flask-container-2-service
+        subset: v2
+  - route:
+    - destination:
+        host: flask-container-2-service
+        subset: v1
+---
