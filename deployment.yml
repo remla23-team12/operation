@@ -1,18 +1,60 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-container-2-depl
-  labels:
-    app: flask-container-2
+  name: flask-container-2-depl-v1
+  labels: {app: flask-container-2, version: v1}
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: flask-container-2
+    matchLabels: {app: flask-container-2, version: v1}
   template:
     metadata:
-      labels:
-        app: flask-container-2
+      labels: {app: flask-container-2, version: v1}
+    spec:
+      containers:
+      - name: flask-container-2
+        image: ghcr.io/remla23-team12/model-service:0.1.5
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: ghcr-credentials
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-container-1-depl-v1
+  labels: {app: flask-container-1, version: v1}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: flask-container-1, version: v1}
+  template:
+    metadata:
+      labels: {app: flask-container-1, version: v1}
+    spec:
+      containers:
+      - name: flask-container-1
+        image: ghcr.io/remla23-team12/app:0.1.0
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MODEL_SERVICE_URL
+          value: "http://flask-container-2-service:8082"
+      imagePullSecrets:
+      - name: ghcr-credentials
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-container-2-depl-v2
+  labels: {app: flask-container-2, version: v2}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: flask-container-2, version: v2}
+  template:
+    metadata:
+      labels: {app: flask-container-2, version: v2}
     spec:
       containers:
       - name: flask-container-2
@@ -22,33 +64,18 @@ spec:
       imagePullSecrets:
       - name: ghcr-credentials
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: flask-container-2-service
-spec:
-  selector:
-    app: flask-container-2
-  ports:
-    - protocol: TCP
-      port: 8082
-      targetPort: 8080
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-container-1-depl
-  labels:
-    app: flask-container-1
+  name: flask-container-1-depl-v2
+  labels: {app: flask-container-1, version: v2}
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: flask-container-1
+    matchLabels: {app: flask-container-1, version: v2}
   template:
     metadata:
-      labels:
-        app: flask-container-1
+      labels: {app: flask-container-1, version: v2}
     spec:
       containers:
       - name: flask-container-1
@@ -64,40 +91,121 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: flask-container-2-service
+spec:
+  selector:
+    app: flask-container-2
+  ports:
+    - name: http-8082
+      port: 8082
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: flask-container-1-service
-  labels:
-    app: flask-container-1-servicelabel
 spec:
   type: NodePort
   selector:
     app: flask-container-1
   ports:
-    - protocol: TCP
+    - name: http-8081
       port: 8081
       targetPort: 5000
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
 metadata:
-  name: flask-app-ingress
+  name: flask-container-2-destination-rule
 spec:
-  rules:
-  - http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: flask-container-1-service
-            port:
-              number: 8081
-      - pathType: Prefix
-        path: "/prometheus"
-        backend:
-          service:
-            name: myprom-kube-prometheus-sta-prometheus
-            port:
-              number: 9090
+  host: flask-container-2-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: flask-container-1-destination-rule
+spec:
+  host: flask-container-1-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-entry-service
+spec:
+  gateways:
+    - my-gateway
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        prefix: /prometheus
+    route:
+    - destination:
+        host: myprom-kube-prometheus-sta-prometheus
+        port:
+          number: 9090
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+      weight: 90
+    - destination:
+        host: flask-container-1-service
+        subset: v2
+      weight: 10
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: my-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: flask-container-2-virtual-service
+spec:
+  hosts:
+  - flask-container-2-service
+  http:
+  - match:
+    - sourceLabels:
+        version: v2
+    route:
+    - destination:
+        host: flask-container-2-service
+        subset: v2
+  - route:
+    - destination:
+        host: flask-container-2-service
+        subset: v1
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
