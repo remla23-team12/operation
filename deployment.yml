@@ -1,6 +1,57 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: flask-container-2-depl-experimental
+  labels: {app: flask-container-2, version: experimental}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: flask-container-2, version: experimental}
+  template:
+    metadata:
+      labels: {app: flask-container-2, version: experimental}
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "8080"
+    spec:
+      containers:
+      - name: flask-container-2
+        image: ghcr.io/remla23-team12/model-service:0.5.0
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: ghcr-credentials
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-container-1-depl-experimental
+  labels: {app: flask-container-1, version: experimental}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: flask-container-1, version: experimental}
+  template:
+    metadata:
+      labels: {app: flask-container-1, version: experimental}
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "5000"
+    spec:
+      containers:
+      - name: flask-container-1
+        image: ghcr.io/remla23-team12/app:0.1.0
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MODEL_SERVICE_URL
+          value: "http://flask-container-2-service:8082"
+      imagePullSecrets:
+      - name: ghcr-credentials
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: flask-container-2-depl-v1
   labels: {app: flask-container-2, version: v1}
 spec:
@@ -67,7 +118,7 @@ spec:
     spec:
       containers:
       - name: flask-container-2
-        image: ghcr.io/remla23-team12/model-service:latest
+        image: ghcr.io/remla23-team12/model-service:0.1.6
         ports:
         - containerPort: 8080
       imagePullSecrets:
@@ -138,6 +189,9 @@ spec:
   - name: v2
     labels:
       version: v2
+  - name: experimental
+    labels:
+      version: experimental
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -152,6 +206,9 @@ spec:
   - name: v2
     labels:
       version: v2
+  - name: experimental
+    labels:
+      version: experimental
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -170,11 +227,15 @@ spec:
     - destination:
         host: flask-container-1-service
         subset: v1
-      weight: 90
+      weight: 70
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+      weight: 15
     - destination:
         host: flask-container-1-service
         subset: v2
-      weight: 10
+      weight: 15
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -206,6 +267,12 @@ spec:
     - destination:
         host: flask-container-2-service
         subset: v2
+    - sourceLabels:
+        version: experimental
+    route:
+    - destination:
+        host: flask-container-2-service
+        subset: experimental
   - route:
     - destination:
         host: flask-container-2-service
