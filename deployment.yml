@@ -223,18 +223,63 @@ spec:
   - match:
     - uri:
         prefix: /
+      headers:
+        version_origin:
+          exact: v2
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v2
+      weight: 100
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        version_origin:
+          exact: experimental
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+      weight: 100
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        version_origin:
+          exact: v1
     route:
     - destination:
         host: flask-container-1-service
         subset: v1
+      weight: 100
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+      headers:
+        request:
+          add:
+            version_origin: v1
       weight: 70
     - destination:
         host: flask-container-1-service
         subset: experimental
       weight: 15
+      headers:
+        request:
+          add:
+            version_origin: experimental
     - destination:
         host: flask-container-1-service
         subset: v2
+      headers:
+        request:
+          add:
+            version_origin: v2
       weight: 15
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -267,6 +312,7 @@ spec:
     - destination:
         host: flask-container-2-service
         subset: v2
+  - match:   
     - sourceLabels:
         version: experimental
     route:
@@ -277,3 +323,37 @@ spec:
     - destination:
         host: flask-container-2-service
         subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: flask-container-1-virtual-service
+spec:
+  hosts:
+  - flask-container-1-service
+  http:
+  - match:
+    - headers:
+        version_origin:
+          exact: v2
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v2
+  - match:
+    - headers:
+        version_origin:
+          exact: v1
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+  - match:
+    - headers:
+        version_origin:
+          exact: experimental
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+
