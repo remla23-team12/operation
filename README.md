@@ -5,6 +5,16 @@
 - Helm
 - Kubectl
 - Istio
+
+## Simple Installation
+
+1. clone the repository
+
+2. run the deployment (this also starts the tunnel which blocks the terminal)
+    ```bat
+    ./deploy.sh
+    ```
+
 ## Kubernetes Migration
 ---
 We have migrated our Docker deployment to Kubernetes.
