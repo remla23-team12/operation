@@ -7,4 +7,15 @@ dependencies:
   - name: kube-prometheus-stack
     version: 46.2.0
     repository: https://prometheus-community.github.io/helm-charts
-    condition: deploy-prom-stack
+  - name: base
+    version: 1.17.2
+    repository: https://istio-release.storage.googleapis.com/charts
+  - name: cni
+    version: 1.17.2
+    repository: https://istio-release.storage.googleapis.com/charts
+  - name: gateway
+    version: 1.17.2
+    repository: https://istio-release.storage.googleapis.com/charts
+  - name: istiod
+    version: 1.17.2
+    repository: https://istio-release.storage.googleapis.com/charts

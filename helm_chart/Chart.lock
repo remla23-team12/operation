@@ -2,5 +2,17 @@ dependencies:
 - name: kube-prometheus-stack
   repository: https://prometheus-community.github.io/helm-charts
   version: 46.2.0
-digest: sha256:e22bcbe6b8597afa2967e97393f01f54a61ce8eba0437a59316117bab7c45565
-generated: "2023-05-24T13:29:19.663625053+02:00"
+- name: base
+  repository: https://istio-release.storage.googleapis.com/charts
+  version: 1.17.2
+- name: cni
+  repository: https://istio-release.storage.googleapis.com/charts
+  version: 1.17.2
+- name: gateway
+  repository: https://istio-release.storage.googleapis.com/charts
+  version: 1.17.2
+- name: istiod
+  repository: https://istio-release.storage.googleapis.com/charts
+  version: 1.17.2
+digest: sha256:12f3a63578a43a9381ac660edac9fca98c632ac9fca8ba092499b38152752663
+generated: "2023-05-28T16:20:38.715500329+02:00"

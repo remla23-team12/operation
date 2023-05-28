@@ -14,10 +14,6 @@ Please follow these steps:
     ```bat
     minikube start --memory=<the more the better, 11900 was used> --cpus=<the more the better, 4 was used>
     ```
-2. Run the following command once to get Istio Custom Resource Definitions (minikube must be started before this step)
-    ```bat
-    istioctl install
-    ```
 3. Run the following command once and keep the terminal open for the Kubernetes dashboard
     ```bat
     minikube dashboard
