@@ -5,9 +5,8 @@
 - Helm
 - Kubectl
 - Istio
-## Kubernetes Migration
+## Istio Implementation
 ---
-We have migrated our Docker deployment to Kubernetes.
 
 Please follow these steps:
 1. Run the  following command to start minikube with sufficient resources (do not forget to also have docker running)
@@ -22,37 +21,26 @@ Please follow these steps:
     ```bat
     minikube dashboard
     ```
-4. Run the following command
+4. Set the following label to the default namespace:
     ```bat
-    docker login ghcr.io
-    ```
-    If that does not work login via this command.
-    ```bat
-    kubectl create secret docker-registry ghcr-credentials \
-    --docker-server=ghcr.io \
-    --docker-username=<GITHUB_USERNAME> \
-    --docker-password=<GITHUB_PAT>
+    kubectl label ns default istio-injection=enabled
     ```
 5. Install the helm chart
     Run the following command:
     ```bat
     helm install myapp  ./helm_chart/
     ```
-6. Set the following label to the default namespace:
-    ```bat
-    kubectl label ns default istio-injection=enabled
-    ```
-7. In the dashboard, you should see that there are 10 pods created and a few other sets of services.
-8. Run the following command once and keep the terminal open for the tunnel to stay active to access the services.
+6. In the dashboard, you should see that there are 10 pods created and a few other sets of services.
+7. Run the following command once and keep the terminal open for the tunnel to stay active to access the services.
     ```bat
     minikube tunnel
     ```
-9. Check the dashboard and wait until everything has started and is green to continue to the next step.
-10. To access the ML model for restaurant reviews simply navigate to `localhost`.
-11. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
-12. To access promotheus simply navigate to `localhost/prometheus`.
-13. To access grafana simply navigate to `localhost/grafana`. You will be prompted to login, the username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `REMLATeam12` (the title name of our dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value `REMLATeam12` under the Name column, click that to be directed to the dashboards.
-14. When done, remove the application and close all terminals: 
+8. Check the dashboard and wait until everything has started and is green to continue to the next step.
+9. To access the ML model for restaurant reviews simply navigate to `localhost`.
+10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
+11. To access promotheus simply navigate to `localhost/prometheus`.
+12. To access grafana simply navigate to `localhost/grafana`. You will be prompted to login, the username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `REMLATeam12` (the title name of our dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value `REMLATeam12` under the Name column, click that to be directed to the dashboards.
+13. When done, remove the application and close all terminals: 
     Run the following command:
     ```bat
     helm uninstall myapp
