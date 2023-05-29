@@ -12,6 +12,11 @@ flaskContainer2:
 
 kube-prometheus-stack:
   fullnameOverride: prom
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
   prometheus:
     prometheusSpec:
       additionalAlertManagerConfigs:
