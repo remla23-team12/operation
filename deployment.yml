@@ -1,54 +1,54 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: flask-container-2-depl-experimental
-  labels: {app: flask-container-2, version: experimental}
-spec:
-  replicas: 1
-  selector:
-    matchLabels: {app: flask-container-2, version: experimental}
-  template:
-    metadata:
-      labels: {app: flask-container-2, version: experimental}
-      annotations:
-         prometheus.io/scrape: "true"
-         prometheus.io/port: "8080"
-    spec:
-      containers:
-      - name: flask-container-2
-        image: ghcr.io/remla23-team12/model-service:0.5.0
-        ports:
-        - containerPort: 8080
-      imagePullSecrets:
-      - name: ghcr-credentials
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: flask-container-1-depl-experimental
-  labels: {app: flask-container-1, version: experimental}
-spec:
-  replicas: 1
-  selector:
-    matchLabels: {app: flask-container-1, version: experimental}
-  template:
-    metadata:
-      labels: {app: flask-container-1, version: experimental}
-      annotations:
-         prometheus.io/scrape: "true"
-         prometheus.io/port: "5000"
-    spec:
-      containers:
-      - name: flask-container-1
-        image: ghcr.io/remla23-team12/app:0.1.2
-        ports:
-        - containerPort: 5000
-        env:
-        - name: MODEL_SERVICE_URL
-          value: "http://flask-container-2-service:8082"
-      imagePullSecrets:
-      - name: ghcr-credentials
----
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: flask-container-2-depl-experimental
+#   labels: {app: flask-container-2, version: experimental}
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels: {app: flask-container-2, version: experimental}
+#   template:
+#     metadata:
+#       labels: {app: flask-container-2, version: experimental}
+#       annotations:
+#          prometheus.io/scrape: "true"
+#          prometheus.io/port: "8080"
+#     spec:
+#       containers:
+#       - name: flask-container-2
+#         image: ghcr.io/remla23-team12/model-service:0.5.0
+#         ports:
+#         - containerPort: 8080
+#       imagePullSecrets:
+#       - name: ghcr-credentials
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: flask-container-1-depl-experimental
+#   labels: {app: flask-container-1, version: experimental}
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels: {app: flask-container-1, version: experimental}
+#   template:
+#     metadata:
+#       labels: {app: flask-container-1, version: experimental}
+#       annotations:
+#          prometheus.io/scrape: "true"
+#          prometheus.io/port: "5000"
+#     spec:
+#       containers:
+#       - name: flask-container-1
+#         image: ghcr.io/remla23-team12/app:0.1.2
+#         ports:
+#         - containerPort: 5000
+#         env:
+#         - name: MODEL_SERVICE_URL
+#           value: "http://flask-container-2-service:8082"
+#       imagePullSecrets:
+#       - name: ghcr-credentials
+# ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -118,7 +118,7 @@ spec:
     spec:
       containers:
       - name: flask-container-2
-        image: ghcr.io/remla23-team12/model-service:0.1.6
+        image: ghcr.io/remla23-team12/model-service:latest #        image: ghcr.io/remla23-team12/model-service:0.1.6
         ports:
         - containerPort: 8080
       imagePullSecrets:
@@ -142,7 +142,7 @@ spec:
     spec:
       containers:
       - name: flask-container-1
-        image: ghcr.io/remla23-team12/app:0.1.1
+        image: ghcr.io/remla23-team12/app:latest #        image: ghcr.io/remla23-team12/app:0.1.1
         ports:
         - containerPort: 5000
         env:
@@ -189,9 +189,9 @@ spec:
   - name: v2
     labels:
       version: v2
-  - name: experimental
-    labels:
-      version: experimental
+  # - name: experimental
+  #   labels:
+  #     version: experimental
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -206,9 +206,9 @@ spec:
   - name: v2
     labels:
       version: v2
-  - name: experimental
-    labels:
-      version: experimental
+  # - name: experimental
+  #   labels:
+  #     version: experimental
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -252,35 +252,40 @@ spec:
     - destination:
         host: flask-container-1-service
         subset: v1
-      weight: 100
-  - match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: flask-container-1-service
-        subset: v1
-      headers:
-        request:
-          add:
-            version_origin: v1
-      weight: 70
-    - destination:
-        host: flask-container-1-service
-        subset: experimental
-      weight: 15
-      headers:
-        request:
-          add:
-            version_origin: experimental
+  #     weight: 100
+  # - match:
+  #   - uri:
+  #       prefix: /
+  #   route:
+  #   - destination:
+  #       host: flask-container-1-service
+  #       subset: v1
+  #     headers:
+  #       request:
+  #         add:
+  #           version_origin: v1
+  #     weight: 70
+  #   - destination:
+  #       host: flask-container-1-service
+  #       subset: experimental
+  #     weight: 15
+  #     headers:
+  #       request:
+  #         add:
+  #           version_origin: experimental
+  #   - destination:
+  #       host: flask-container-1-service
+  #       subset: v2
+  #     headers:
+  #       request:
+  #         add:
+  #           version_origin: v2
+  #     weight: 15
+      weight: 90
     - destination:
         host: flask-container-1-service
         subset: v2
-      headers:
-        request:
-          add:
-            version_origin: v2
-      weight: 15
+      weight: 10
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -312,13 +317,15 @@ spec:
     - destination:
         host: flask-container-2-service
         subset: v2
-  - match:   
-    - sourceLabels:
-        version: experimental
-    route:
-    - destination:
-        host: flask-container-2-service
-        subset: experimental
+
+  # - match:   
+  #   - sourceLabels:
+  #       version: experimental
+  #   route:
+  #   - destination:
+  #       host: flask-container-2-service
+  #       subset: experimental
+
   - route:
     - destination:
         host: flask-container-2-service

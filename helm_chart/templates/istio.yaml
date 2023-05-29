@@ -61,7 +61,7 @@ spec:
         subset: v1
       weight: 100
       mirror:
-        host: flask-container-2-service
+        host: flask-container-1-service
         subset: v2
 ---
 apiVersion: networking.istio.io/v1alpha3
