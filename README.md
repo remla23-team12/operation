@@ -8,6 +8,8 @@
 ## Istio Implementation
 ---
 
+Our WIP essay is the file named `REMLA_essay___Team_12.pdf`. Section 3 of this essay contains the documentation of what was done for this assignment concerning Istio, shadow launching, rate limiting and continuous experimentation
+
 Please follow these steps:
 1. Run the  following command to start minikube with sufficient resources (do not forget to also have docker running)
     ```bat
@@ -39,7 +41,7 @@ Please follow these steps:
 9. To access the ML model for restaurant reviews simply navigate to `localhost`. If you get a page with the message `no healthy upstream`, this is probably because not all pods are running yet, make sure to wait until all pods returned by the `kubectl get pods` command have the value `Running` for the `Status` column (This takes around 4.5 minutes if 9 GB and 4 cpus is assigned to minikube).
 10. Test it by entering reviews. For example, submitting 'I hate this restaurant' would result in :( and 'The staff is very friendly' results in :D.
 11. To access promotheus simply navigate to `localhost/prometheus`.
-12. To access grafana simply navigate to `localhost/grafana`. You will be prompted to login, the username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `REMLATeam12` (the title name of our dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value `REMLATeam12` under the Name column, click that to be directed to the dashboards. After clicking on the dashboard, you should see graphs for prediction accuracy for each version of the deployments (data on the graph only appears after leaving reviews and clicking correct and incorrect buttons)
+12. To access grafana simply navigate to `localhost/grafana`. You will be prompted to login, the username is `admin` and the password is `prom-operator`. To navigate to the dashboard that is automatically imported via a ConfigMap, click on the hamburger icon which is also known as the toggle menu, in that menu click on Dashboard. Then type `REMLATeam12` (the title name of our dashboards) in the text box which has `Search for dashboard` in it. There should be a row in the search results below the text box with the value `REMLATeam12` under the Name column, click that to be directed to the dashboards. After clicking on the dashboard, you should see graphs for `prediction_accuracy` (our app specific metric) for each version of the deployments (data on the graph only appears after leaving reviews and clicking correct and incorrect buttons)
 13. When done, remove the application and close all terminals: 
     Run the following command:
     ```bat
