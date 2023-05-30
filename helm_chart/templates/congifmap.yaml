@@ -476,7 +476,7 @@ data:
               },
               "editorMode": "builder",
               "expr": "rate(total_predictions_total[1m])",
-              "legendFormat": "{{label_name}}",
+              "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
