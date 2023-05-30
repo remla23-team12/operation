@@ -10,6 +10,9 @@ spec:
   template:
     metadata:
       labels: {app: flask-container-2, version: v2}
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "8080"   
     spec:
       containers:
       - name: flask-container-2
@@ -31,6 +34,9 @@ spec:
   template:
     metadata:
       labels: {app: flask-container-1, version: v2}
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "5000"
     spec:
       containers:
       - name: flask-container-1

@@ -11,6 +11,9 @@ spec:
   - name: v2
     labels:
       version: v2
+  - name: experimental
+    labels:
+      version: experimental
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -25,6 +28,9 @@ spec:
   - name: v2
     labels:
       version: v2
+  - name: experimental
+    labels:
+      version: experimental
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -52,9 +58,24 @@ spec:
         host: myapp-grafana
         port:
           number: 80
+  # - match:
+  #   - uri:
+  #       prefix: /
+  #   route:
+  #   - destination:
+  #       host: flask-container-1-service
+  #       subset: v1
+  #     weight: 100
+  #     mirror:
+  #       host: flask-container-1-service
+  #       subset: v2
+########## start matching based on header info
   - match:
     - uri:
         prefix: /
+      headers:
+        version_origin:
+          exact: v1
     route:
     - destination:
         host: flask-container-1-service
@@ -63,6 +84,55 @@ spec:
       mirror:
         host: flask-container-1-service
         subset: v2
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        version_origin:
+          exact: experimental
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+      weight: 100
+      mirror:
+        host: flask-container-1-service
+        subset: v2      
+######### End     
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+      headers:
+        request:
+          add:
+            version_origin: v1
+      weight: 70
+      mirror:
+        host: flask-container-1-service
+        subset: v2
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+      weight: 30
+      headers:
+        request:
+          add:
+            version_origin: experimental
+      mirror:
+        host: flask-container-1-service
+        subset: v2
+    # - destination:
+    #     host: flask-container-1-service
+    #     subset: v2
+    #   headers:
+    #     request:
+    #       add:
+    #         version_origin: v2
+    #   weight: 15
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -94,6 +164,13 @@ spec:
     - destination:
         host: flask-container-2-service
         subset: v2
+  - match:   
+    - sourceLabels:
+        version: experimental
+    route:
+    - destination:
+        host: flask-container-2-service
+        subset: experimental
   - route:
     - destination:
         host: flask-container-2-service
