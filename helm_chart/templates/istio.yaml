@@ -55,7 +55,7 @@ spec:
         prefix: /grafana
     route:
     - destination:
-        host: myapp-grafana
+        host: {{ .Release.Name }}-grafana
         port:
           number: 80
   # - match:
@@ -194,11 +194,11 @@ metadata:
   name: grafana
 spec:
   hosts:
-  - myapp-grafana
+  - {{ .Release.Name }}-grafana
   http:
   - route:
     - destination:
-        host: myapp-grafana
+        host: {{ .Release.Name }}-grafana
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter

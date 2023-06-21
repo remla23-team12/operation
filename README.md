@@ -27,12 +27,12 @@ Please follow these steps:
     ```bat
     kubectl label ns default istio-injection=enabled
     ```
-5. Install the helm chart
+5. Install the helm chart, you can pick the name of the chart.
     Run the following command:
     ```bat
-    helm install myapp  ./helm_chart/
+    helm install <NAME>  ./helm_chart/
     ```
-6. In the dashboard, you should see that there are 10 pods created and a few other sets of services.
+6. In the dashboard, you should see that there are 12 pods created and a few other sets of services.
 7. Run the following command once and keep the terminal open for the tunnel to stay active to access the services.
     ```bat
     minikube tunnel
