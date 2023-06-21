@@ -26,7 +26,6 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 27,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -89,24 +88,16 @@ data:
               {
                 "matcher": {
                   "id": "byRegexp",
-                  "options": "/total_predictions/"
+                  "options": "/depl-v2/"
                 },
                 "properties": [
                   {
-                    "id": "displayName",
-                    "value": "Total Predictions"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byRegexp",
-                  "options": "/correct_predictions/"
-                },
-                "properties": [
-                  {
-                    "id": "displayName",
-                    "value": "Total Correct Predictions"
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
                   }
                 ]
               }
@@ -138,7 +129,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "builder",
-              "expr": "total_predictions_total",
+              "expr": "label_replace(label_replace(label_replace(label_replace(label_replace(max_over_time(total_predictions_total[1m]), \"container\", \"\", \"\", \"(.*)\"), \"instance\", \"\", \"\", \"(.*)\"), \"job\", \"\", \"\", \"(.*)\"), \"namespace\", \"\", \"\", \"(.*)\"), \"service\", \"Total Predictions\", \"\", \"(.*)\")",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -149,11 +140,11 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "builder",
-              "expr": "correct_predictions_total",
+              "expr": "label_replace(label_replace(label_replace(label_replace(label_replace(max_over_time(correct_predictions_total[1m]), \"container\", \"\", \"\", \"(.*)\"), \"instance\", \"\", \"\", \"(.*)\"), \"job\", \"\", \"\", \"(.*)\"), \"namespace\", \"\", \"\", \"(.*)\"), \"service\", \"Total Correct Predictions\", \"\", \"(.*)\")",
               "hide": false,
               "legendFormat": "__auto",
               "range": true,
-              "refId": "B"
+              "refId": "C"
             }
           ],
           "title": "Total predictions",
@@ -214,7 +205,24 @@ data:
                 ]
               }
             },
-            "overrides": []
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/depl-v2/"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
+              }
+            ]
           },
           "gridPos": {
             "h": 8,
@@ -242,7 +250,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "builder",
-              "expr": "rate(total_predictions_total[1m])",
+              "expr": "rate(total_predictions_total[$__rate_interval])",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -528,6 +536,30 @@ data:
                     "value": true
                   }
                 ]
+              },
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "histogram_quantile(0.95, sum by(le) (rate(prediction_accuracy_changes_bucket[2m0s])))"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": true
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -679,7 +711,7 @@ data:
           "type": "news"
         }
       ],
-      "refresh": "",
+      "refresh": false,
       "schemaVersion": 38,
       "style": "dark",
       "tags": [],
@@ -720,6 +752,6 @@ data:
       "timezone": "browser",
       "title": "REMLATeam12",
       "uid": "cfc8f517-c612-4a53-b9aa-b33f8736fffe",
-      "version": 4,
+      "version": 1,
       "weekStart": ""
     }
