@@ -9,7 +9,7 @@ spec:
   selector:
     app: flask-container-1
   ports:
-    - protocol: TCP
+    - name: tcp-1
       port: {{ .Values.flaskContainer1.servicePort }}
       targetPort: {{ .Values.flaskContainer1.port }}
 ---
@@ -23,7 +23,7 @@ spec:
   selector:
     app: flask-container-2
   ports:
-    - protocol: TCP
+    - name: tcp-2
       port: {{ .Values.flaskContainer2.servicePort }}
       targetPort: {{ .Values.flaskContainer2.port }}
 ---
