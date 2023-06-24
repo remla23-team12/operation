@@ -93,7 +93,7 @@ spec:
     - destination:
         host: flask-container-1-service
         subset: v1
-      weight: 70
+      weight: 85
       headers:
         request:
           add:
@@ -101,7 +101,7 @@ spec:
     - destination:
         host: flask-container-1-service
         subset: experimental
-      weight: 30
+      weight: 15
       headers:
         request:
           add:
