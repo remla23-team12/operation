@@ -6,6 +6,8 @@ services:
       - MODEL_SERVICE_URL=http://flask-container-2:8080
     ports:
       - "8081:5000"
+    volumes:
+      - ./flask-container-1:/app
 
   flask-container-2:
     image: ghcr.io/remla23-team12/model-service:0.5.0
