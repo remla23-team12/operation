@@ -8,8 +8,6 @@
 ## Istio Implementation
 ---
 
-Our WIP essay is the file named `REMLA_essay___Team_12.pdf`. Section 3 of this essay contains the documentation of what was done for this assignment concerning Istio, shadow launching, rate limiting and continuous experimentation
-
 Please follow these steps:
 1. Run the  following command to start minikube with sufficient resources (do not forget to also have docker running)
     ```bat
