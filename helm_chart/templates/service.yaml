@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-container-1-service
+  labels:
+    app: flask-container-1-servicelabel
+spec:
+  type: NodePort
+  selector:
+    app: flask-container-1
+  ports:
+    - name: http-1
+      port: {{ .Values.flaskContainer1.servicePort }}
+      targetPort: {{ .Values.flaskContainer1.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-container-2-service
+  labels:
+    app: flask-container-2-servicelabel
+spec:
+  selector:
+    app: flask-container-2
+  ports:
+    - name: http-2
+      port: {{ .Values.flaskContainer2.servicePort }}
+      targetPort: {{ .Values.flaskContainer2.port }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mymonitor
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: flask-container-1-servicelabel
+  endpoints:
+  - interval: 1s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mymonitor2
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: flask-container-2-servicelabel
+  endpoints:
+  - interval: 1s

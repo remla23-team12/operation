@@ -1,0 +1,67 @@
+imagePullSecrets: ghcr-credentials
+flaskContainer1:
+  image: ghcr.io/remla23-team12/app:0.1.0
+  imagev2: ghcr.io/remla23-team12/app:latest
+  port: 5000
+  servicePort: 8081
+flaskContainer2:
+  image: ghcr.io/remla23-team12/model-service:0.1.5
+  imagev2: ghcr.io/remla23-team12/model-service:0.5.0
+  port: 8080
+  servicePort: 8082
+
+kube-prometheus-stack:
+  fullnameOverride: prom
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
+  prometheus:
+    prometheusSpec:
+      additionalAlertManagerConfigs:
+        - static_configs:
+          - targets: 
+            - "prom-alertmanager:9093"
+      externalUrl: http://localhost/prometheus
+      routePrefix: /prometheus
+  additionalPrometheusRulesMap:
+    rule-name:
+      groups:
+        - name: ruleset_1
+          rules:
+            - alert: HighErrorRate
+              expr: total_predictions_total - correct_predictions_total > 10
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: HighErrorRate
+                description: "HighErrorRate"
+  alertmanager:
+    config:
+      global:
+        smtp_smarthost: 'smtp.office365.com:587'
+        smtp_from: 'relma23team12@outlook.com'
+        smtp_auth_username: 'relma23team12@outlook.com'
+        smtp_auth_password: 'HighErrorRate'
+      route:
+        group_by: ['job']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 12h
+        receiver: 'team-emails'
+        routes:
+        - match:
+            alertname: HighErrorRate
+          receiver: 'team-emails'
+      receivers:
+      - name: 'team-emails'
+        email_configs:
+        - to: 'relma23team12@outlook.com'
+          send_resolved: true
+
+  grafana:
+    env:
+      GF_SERVER_ROOT_URL: https://localhost:80/grafana
+      GF_SERVER_SERVE_FROM_SUB_PATH: 'true'

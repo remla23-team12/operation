@@ -1,0 +1,269 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: flask-container-2-destination-rule
+spec:
+  host: flask-container-2-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+  - name: experimental
+    labels:
+      version: experimental
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: flask-container-1-destination-rule
+spec:
+  host: flask-container-1-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+  - name: experimental
+    labels:
+      version: experimental
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-entry-service
+spec:
+  gateways:
+    - my-gateway
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        prefix: /prometheus
+    route:
+    - destination:
+        host: prom-prometheus
+        port:
+          number: 9090
+  - match:
+    - uri:
+        prefix: /grafana
+    route:
+    - destination:
+        host: {{ .Release.Name }}-grafana
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        version_origin:
+          exact: v1
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+      weight: 100
+    mirror:
+       host: flask-container-1-service
+       subset: v2
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        version_origin:
+          exact: experimental
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+      weight: 100
+    mirror:
+      host: flask-container-1-service
+      subset: v2
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: flask-container-1-service
+        subset: v1
+      weight: 85
+      headers:
+        request:
+          add:
+            version_origin: v1
+    - destination:
+        host: flask-container-1-service
+        subset: experimental
+      weight: 15
+      headers:
+        request:
+          add:
+            version_origin: experimental
+    mirror:
+        host: flask-container-1-service
+        subset: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: my-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: flask-container-2-virtual-service
+spec:
+  hosts:
+  - flask-container-2-service
+  http:
+  - match:
+    - sourceLabels:
+        version: v2
+    route:
+    - destination:
+        host: flask-container-2-service
+        subset: v2
+  - match:   
+    - sourceLabels:
+        version: experimental
+    route:
+    - destination:
+        host: flask-container-2-service
+        subset: experimental
+  - route:
+    - destination:
+        host: flask-container-2-service
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: prometheus
+spec:
+  hosts:
+  - prom-prometheus
+  http:
+  - route:
+    - destination:
+        host: prom-prometheus
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: grafana
+spec:
+  hosts:
+  - {{ .Release.Name }}-grafana
+  http:
+  - route:
+    - destination:
+        host: {{ .Release.Name }}-grafana
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-local-ratelimit-svc-1
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      app: flask-container-1
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: http_local_rate_limiter
+              token_bucket:
+                max_tokens: 10
+                tokens_per_fill: 10
+                fill_interval: 60s
+              filter_enabled:
+                runtime_key: local_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: local_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-local-rate-limit
+                    value: 'true'
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-local-ratelimit-svc-2
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      app: flask-container-2
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: http_local_rate_limiter
+              token_bucket:
+                max_tokens: 10
+                tokens_per_fill: 10
+                fill_interval: 60s
+              filter_enabled:
+                runtime_key: local_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: local_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-local-rate-limit
+                    value: 'true'

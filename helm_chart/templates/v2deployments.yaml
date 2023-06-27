@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-container-2-depl-v2
+  labels: {app: flask-container-2, version: v2}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: flask-container-2, version: v2}
+  template:
+    metadata:
+      labels: {app: flask-container-2, version: v2}
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "8080"   
+    spec:
+      containers:
+      - name: flask-container-2
+        image: {{ .Values.flaskContainer2.imagev2 }}
+        ports:
+        - containerPort: {{ .Values.flaskContainer2.port }}
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecrets }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-container-1-depl-v2
+  labels: {app: flask-container-1, version: v2}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: flask-container-1, version: v2}
+  template:
+    metadata:
+      labels: {app: flask-container-1, version: v2}
+      annotations:
+         prometheus.io/scrape: "true"
+         prometheus.io/port: "5000"
+    spec:
+      containers:
+      - name: flask-container-1
+        image: {{ .Values.flaskContainer1.imagev2 }}
+        ports:
+        - containerPort: {{ .Values.flaskContainer1.port }}
+        env:
+        - name: MODEL_SERVICE_URL
+          value: "http://flask-container-2-service:{{ .Values.flaskContainer2.servicePort }}"
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecrets }}
+---

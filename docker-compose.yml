@@ -1,5 +1,3 @@
-version: "0.0.1"
-
 services:
   flask-container-1:
     image: ghcr.io/remla23-team12/app:latest
@@ -12,5 +10,7 @@ services:
       - ./flask-container-1:/app
 
   flask-container-2:
-    image: ghcr.io/remla23-team12/model-service:latest
+    image: ghcr.io/remla23-team12/model-service:0.5.0
     container_name: flask-container-2
+    ports:
+      - "8082:8080"
