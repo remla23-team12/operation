@@ -45,7 +45,7 @@ Please follow these steps:
 13. When done, remove the application and close all terminals: 
     Run the following command:
     ```bat
-    helm uninstall myapp
+    helm uninstall <NAME>
     ```
 ---
 
@@ -59,6 +59,10 @@ To remove the pods again run:
  ```bat
  kubectl delete -f deployment.yml
  ```
+
+### A figure of Kiali dashboard
+The screenshot only includes deployments and ingress gateway, entities outside the pictures are grafana and prometheus relevant sources.
+![Screenshot](./istio.png)
 
 ### Some interesting starting pointers to files that help outsiders understand the code base:
 In the docker-compose.yml file we have two services namely `flask-container-1` and `flask-container-2`. 
